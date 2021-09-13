@@ -1,0 +1,14 @@
+mypy
+pyls-mypy
+autopep8
+attrs
+numpy
+scipy
+matplotlib
+seaborn
+torch==1.8.1
+ipykernel
+termcolor
+verboselogs
+coloredlogs
+ulid-py

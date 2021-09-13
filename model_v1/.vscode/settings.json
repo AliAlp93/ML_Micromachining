@@ -1,0 +1,63 @@
+{
+    "editor.tokenColorCustomizations": {
+        "textMateRules": [
+            {
+                "scope": "googletest.failed",
+                "settings": {
+                    "foreground": "#f00"
+                }
+            },
+            {
+                "scope": "googletest.passed",
+                "settings": {
+                    "foreground": "#0f0"
+                }
+            },
+            {
+                "scope": "googletest.run",
+                "settings": {
+                    "foreground": "#0f0"
+                }
+            }
+        ]
+    },
+    "cSpell.words": [
+        "ae",
+        "arange",
+        "asarray",
+        "asdict",
+        "channel",
+        "cnn",
+        "cnns",
+        "conv",
+        "convolutional",
+        "fname",
+        "for",
+        "hyperparams",
+        "interp",
+        "layers",
+        "lst",
+        "lstm",
+        "lstmcell",
+        "mat",
+        "mert",
+        "mhidden",
+        "moutput",
+        "ndarray",
+        "numpy",
+        "nums",
+        "pyplot",
+        "recursed",
+        "relu",
+        "scipy",
+        "struct",
+        "tolist",
+        "ulid",
+        "unsqueeze",
+        "vstack",
+        "xlabel",
+        "ylabel",
+        "yusuf"
+    ],
+    "python.pythonPath": "/Users/connorcolombo/opt/anaconda3/envs/py_24789_machining_lstm/bin/python"
+}
