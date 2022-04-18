@@ -21,15 +21,15 @@ logger.setLevel('VERBOSE')
 #%%
 # Load all data:
 Sa,_, dataset = load_all_mats()
-
+i=3
 # for i in range(14):
-#     DebugPlots(dataset,i,5)
+DebugPlots(dataset,0,5)
 
 #%% Plots   
 
 
  
-# DebugPlots(dataset,2,1)
+# DebugPlots(dataset,2,1) # DebugPlots(dataset,ExperimentNumber,ChannelNumber, plotAE='true',plotMIC='true',plotFY='true',plotSA='true')
 # ChannelPeaktoPeakForce(dataset,2)
 
 # AllPeaktoPeakForce(dataset,7,14)
@@ -38,13 +38,13 @@ Sa,_, dataset = load_all_mats()
 
 #%%
 # Load pre-configured model:
-model = load_preconfigured_model()
+# model = load_preconfigured_model()
 
 # Train the model:
-trained_model = train(model, dataset)
-
+# trained_model = train(model, dataset)
+# 
 # Save the final model:
-torch.save(trained_model, f'model_v2_trained_{ulid.new()}.pth')
+# torch.save(trained_model, f'model_v2_trained_{ulid.new()}.pth')
 #%% Load A specific Model and Run to get plots
 
 

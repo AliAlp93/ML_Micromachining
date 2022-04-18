@@ -130,9 +130,20 @@ class ExperimentData:
         stack_fields: Dict[str, str] = {
             'signalAE': 'AE_FFT_val',
             'signalMic': 'Mic_FFT_val',
-            'signalFx': 'Fx_mu',
-            'signalFy': 'Fy_mu',
-            'signalFz': 'Fz_mu'
+            'signalFx': 'Fxcomp_mu',
+            'signalFy': 'Fycomp_mu',
+            'signalFz': 'Fzcomp_mu',
+            'signalAE_BG': 'AE_FFT_BG_val',
+            'signalMic_BG': 'Mic_FFT_BG_val',
+            'signalFx_std':'Fxcomp_sig',
+            'signalFy_std':'Fycomp_sig',
+            'signalFz_std':'Fzcomp_sig',
+            'signalSpec_Mic':'Mic_SPEC',
+            'signalSpec_AE':'AE_SPEC',
+            'signalSpec_Mic_BG':'Mic_SPEC_BG',
+            'signalSpec_AE_BG':'AE_SPEC_BG'
+            
+
         }
 
         for s in range(num_sections):
@@ -174,7 +185,7 @@ class ExperimentData:
         )
 
 
-@attr.s(frozen=True, cmp=True, slots=True, auto_attribs=True)
+@attr.s(auto_attribs=True) #frozen=True, cmp=True, slots=True, auto_attribs=True
 class TrainingStack:
     """
     Stacks of Data from across all channels to be fed into the model.
@@ -186,9 +197,19 @@ class TrainingStack:
     signalFx: torch.Tensor
     signalFy: torch.Tensor
     signalFz: torch.Tensor
+    signalAE_BG: torch.Tensor
+    signalMic_BG: torch.Tensor
+    signalFy_std: torch.Tensor
+    signalFx_std: torch.Tensor
+    signalFz_std: torch.Tensor
+    signalSpec_Mic: torch.Tensor
+    signalSpec_AE: torch.Tensor
+    signalSpec_Mic_BG: torch.Tensor
+    signalSpec_AE_BG: torch.Tensor
     signalForces: torch.Tensor
 
-
+    
+    
 @attr.s(frozen=True, cmp=True, slots=True, auto_attribs=True)
 class RoughnessData:
     """Container for file metadata and `ChannelSection` data derived from a file."""
@@ -301,13 +322,25 @@ class ChannelData:
             logger.debug(f"\t\t Processing section {i} . . .")
             data_struct = core_data[i][0][0][0]
             sections.append(ChannelSection.from_mat(
-                statFx=data_struct['statFx'],
-                statFy=data_struct['statFy'],
-                statFz=data_struct['statFz'],
+                
+                statFxraw=data_struct['statFx'],
+                statFyraw=data_struct['statFy'],
+                statFzraw=data_struct['statFz'],
+                
+                statFxcomp=data_struct['statCompFx'],
+                statFycomp=data_struct['statCompFy'],
+                statFzcomp=data_struct['statCompFz'],
+                
                 Mic_FFT=data_struct['Mic_FFT'],
                 AE_FFT=data_struct['AE_FFT'],
                 Mic_FFT_BG=data_struct['Mic_FFT_BG'],
-                AE_FFT_BG=data_struct['AE_FFT_BG']
+                AE_FFT_BG=data_struct['AE_FFT_BG'],
+                
+                Mic_SPEC=data_struct['Spect_Micm'],
+                AE_SPEC=data_struct['Spect_AEm'],
+                Mic_SPEC_BG=data_struct['Spect_Micbg'],
+                AE_SPEC_BG=data_struct['Spect_AEbg']
+                
             ))
 
         # Extract the channel number:
@@ -344,64 +377,123 @@ class ChannelSection:
     """
     force3D_mu: torch.Tensor
     force3D_sig: torch.Tensor
-    statFx: torch.Tensor
-    statFy: torch.Tensor
-    statFz: torch.Tensor
+    
+    statFxraw: torch.Tensor
+    statFyraw: torch.Tensor
+    statFzraw: torch.Tensor
+    
+    statFxcomp: torch.Tensor
+    statFycomp: torch.Tensor
+    statFzcomp: torch.Tensor
+    
     Mic_FFT: torch.Tensor
     AE_FFT: torch.Tensor
     Mic_FFT_BG: torch.Tensor
     AE_FFT_BG: torch.Tensor
-
-    # Useful accessors:
+    
+    Mic_SPEC: torch.Tensor
+    AE_SPEC: torch.Tensor
+    Mic_SPEC_BG: torch.Tensor
+    AE_SPEC_BG: torch.Tensor    
+    
+    
+    """
+    # @property decorator; a pythonic way to use getters and setters in object-oriented programming.
+    
+    # Python programming provides us with a built-in @property decorator which makes usage of getter and setters much easier in Object-Oriented Programming.
+    
+    """
+    # Useful accessors:    
     @property
     def F3D_mu(self) -> torch.Tensor: return self.force3D_mu
     @property
     def F3D_sig(self) -> torch.Tensor: return self.force3D_sig
-
+    
     @property
-    def Fx_mu(self) -> torch.Tensor: return self.statFx[0]
+    def Fxraw_mu(self) -> torch.Tensor: return self.statFxraw[0]
     @property
-    def Fx_sig(self) -> torch.Tensor: return self.statFx[1]
-
+    def Fxraw_sig(self) -> torch.Tensor: return self.statFxraw[1]
+    
     @property
-    def Fy_mu(self) -> torch.Tensor: return self.statFy[0]
+    def Fyraw_mu(self) -> torch.Tensor: return self.statFyraw[0]
     @property
-    def Fy_sig(self) -> torch.Tensor: return self.statFy[1]
-
+    def Fyraw_sig(self) -> torch.Tensor: return self.statFyraw[1]
+    
     @property
-    def Fz_mu(self) -> torch.Tensor: return self.statFz[0]
+    def Fzraw_mu(self) -> torch.Tensor: return self.statFzraw[0]
     @property
-    def Fz_sig(self) -> torch.Tensor: return self.statFz[1]
-
+    def Fzraw_sig(self) -> torch.Tensor: return self.statFzraw[1]
+    
+    
+    @property
+    def Fxcomp_mu(self) -> torch.Tensor: return self.statFxcomp[0]
+    @property
+    def Fxcomp_sig(self) -> torch.Tensor: return self.statFxcomp[1]
+    
+    @property
+    def Fycomp_mu(self) -> torch.Tensor: return self.statFycomp[0]
+    @property
+    def Fycomp_sig(self) -> torch.Tensor: return self.statFycomp[1]
+    
+    @property
+    def Fzcomp_mu(self) -> torch.Tensor: return self.statFzcomp[0]
+    @property
+    def Fzcomp_sig(self) -> torch.Tensor: return self.statFzcomp[1]
+    
+    
     @property
     def Mic_FFT_val(self) -> torch.Tensor: return self.Mic_FFT[0]
     @property
     def Mic_FFT_freq(self) -> torch.Tensor: return self.Mic_FFT[1]
-
+    
     @property
     def AE_FFT_val(self) -> torch.Tensor: return self.AE_FFT[0]
     @property
     def AE_FFT_freq(self) -> torch.Tensor: return self.AE_FFT[1]
-
+    
     @property
     def Mic_FFT_BG_val(self) -> torch.Tensor: return self.Mic_FFT_BG[0]
     @property
     def Mic_FFT_BG_freq(self) -> torch.Tensor: return self.Mic_FFT_BG[1]
-
+    
     @property
     def AE_FFT_BG_val(self) -> torch.Tensor: return self.AE_FFT_BG[0]
     @property
     def AE_FFT_BG_freq(self) -> torch.Tensor: return self.AE_FFT_BG[1]
-
+    
+    
+    @property
+    def Mic_SPEC(self) -> torch.Tensor: return self.Mic_SPEC
+    @property
+    def AE_SPEC(self) -> torch.Tensor: return self.AE_SPEC
+    
+    @property
+    def Mic_SPEC_BG(self) -> torch.Tensor: return self.Mic_SPEC_BG
+    @property
+    def AE_SPEC_BG(self) -> torch.Tensor: return self.AE_SPEC_BG
+    
+    
     @classmethod
     def from_mat(cls,
-                 statFx: np.ndarray,
-                 statFy: np.ndarray,
-                 statFz: np.ndarray,
+                 statFxraw: np.ndarray,
+                 statFyraw: np.ndarray,
+                 statFzraw: np.ndarray,
+                 
+                 statFxcomp: np.ndarray,
+                 statFycomp: np.ndarray,
+                 statFzcomp: np.ndarray,
+                 
                  Mic_FFT: np.ndarray,
                  AE_FFT: np.ndarray,
                  Mic_FFT_BG: np.ndarray,
                  AE_FFT_BG: np.ndarray,
+                 
+                 Mic_SPEC:np.ndarray,
+                 AE_SPEC:np.ndarray,
+                 Mic_SPEC_BG:np.ndarray,
+                 AE_SPEC_BG:np.ndarray,
+                 
+                 
                  force_target_size: int = 180  # target size for force vectors
                  ) -> ChannelSection:
         """
@@ -411,38 +503,49 @@ class ChannelSection:
         statFx_up = np.zeros((2, force_target_size))
         statFy_up = np.zeros((2, force_target_size))
         statFz_up = np.zeros((2, force_target_size))
-        for f in [(statFx, statFx_up), (statFy, statFy_up), (statFz, statFz_up)]:
+        for f in [(statFxcomp, statFx_up), (statFycomp, statFy_up), (statFzcomp, statFz_up)]:
             # For all stat channel (mu, sigma):
             for i in range(2):
                 f[1][i, :] = resample_vector(
                     f[0][i, :], force_target_size, kind='linear'
                 )
-
+    
         # Build 3D Force Structures:
         force3D_mu = torch.stack((
             torch.tensor(statFx_up[0, :]),
             torch.tensor(statFy_up[0, :]),
             torch.tensor(statFz_up[0, :])
         ))
-
+    
         force3D_sig = torch.stack((
             torch.tensor(statFx_up[1, :]),
             torch.tensor(statFy_up[1, :]),
             torch.tensor(statFz_up[1, :])
         ))
-
+    
         # Subtract BG Noise as PSD:
         # ! TODO: Create spectrograms and diff.
-
+    
         # Build and return structure:
         return cls(
+            
+            statFxraw=torch.tensor(statFxraw),
+            statFyraw=torch.tensor(statFyraw),
+            statFzraw=torch.tensor(statFzraw),
+            
             force3D_mu=force3D_mu,
             force3D_sig=force3D_sig,
-            statFx=torch.tensor(statFx_up),
-            statFy=torch.tensor(statFy_up),
-            statFz=torch.tensor(statFz_up),
+            statFxcomp=torch.tensor(statFx_up),
+            statFycomp=torch.tensor(statFy_up),
+            statFzcomp=torch.tensor(statFz_up),
             Mic_FFT=torch.tensor(Mic_FFT),
             AE_FFT=torch.tensor(AE_FFT),
             Mic_FFT_BG=torch.tensor(Mic_FFT_BG),
-            AE_FFT_BG=torch.tensor(AE_FFT_BG)
+            AE_FFT_BG=torch.tensor(AE_FFT_BG),
+            
+            Mic_SPEC=torch.tensor(Mic_SPEC),
+            AE_SPEC=torch.tensor(AE_SPEC),
+            Mic_SPEC_BG=torch.tensor(Mic_SPEC_BG),
+            AE_SPEC_BG=torch.tensor(AE_SPEC_BG)
+            
         )

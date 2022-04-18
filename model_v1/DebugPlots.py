@@ -12,7 +12,7 @@ from model import LSTMModel
 
     
     
-def DebugPlots(dataset,ExperimentNumber,ChannelNumber):
+def DebugPlots(dataset,ExperimentNumber,ChannelNumber, plotAE='true',plotMIC='true',plotFY='true',plotSA='true'):
     
     ae_FFT=np.array(dataset.examples[ExperimentNumber].stack.signalAE.numpy()) 
     mic_FFT=dataset.examples[ExperimentNumber].stack.signalMic.numpy()
@@ -26,55 +26,60 @@ def DebugPlots(dataset,ExperimentNumber,ChannelNumber):
      
     ExperimentInfo=  str(dataset.examples[ExperimentNumber].spindle_speed) +"k "+str(dataset.examples[ExperimentNumber].feed_rate) +"mm "+str(dataset.examples[ExperimentNumber].depth) +"um "
     print(ExperimentInfo)
+
+    if plotAE=='true':    
+        fig, ax = plt.subplots()
+        Ae_lenth=len(ae_FFT[ChannelNumber,:])
+        ax.plot(np.linspace(0, Ae_lenth-1, Ae_lenth), ae_FFT[ChannelNumber,:] ,linewidth=3.0) #Correct the dimensions!!!  
+         
+        ax.set(xlabel='FFT bins', ylabel=' amplitude ',
+               title=ExperimentInfo+'for AE')
+            
+        ax.grid()
+         
+        # fig.savefig("test.png")
+        plt.show()
+        plt.pause(1)
+     
+    if plotMIC=='true':     
+        fig, ax = plt.subplots()
+        Mic_lenth=len(mic_FFT[ChannelNumber,:])
+        ax.plot(np.linspace(0, Mic_lenth-1, Mic_lenth), mic_FFT[ChannelNumber,:] ,linewidth=3.0) #Correct the dimensions!!!  
+         
+        ax.set(xlabel='FFT bins', ylabel=' amplitude ',
+               title=ExperimentInfo+'for MIC')
+            
+        ax.grid() 
+        # fig.savefig("test.png")
+        plt.show()
+        plt.pause(1)
     
-    fig, ax = plt.subplots()
-    Ae_lenth=len(ae_FFT[ChannelNumber,:])
-    ax.plot(np.linspace(0, Ae_lenth-1, Ae_lenth), ae_FFT[ChannelNumber,:] ,linewidth=3.0) #Correct the dimensions!!!  
-     
-    ax.set(xlabel='FFT bins', ylabel=' amplitude ',
-           title=ExperimentInfo+'for AE')
-        
-    ax.grid()
-     
-    # fig.savefig("test.png")
-    plt.show()
-     
-     
-    fig, ax = plt.subplots()
-    Mic_lenth=len(mic_FFT[ChannelNumber,:])
-    ax.plot(np.linspace(0, Mic_lenth-1, Mic_lenth), mic_FFT[ChannelNumber,:] ,linewidth=3.0) #Correct the dimensions!!!  
-     
-    ax.set(xlabel='FFT bins', ylabel=' amplitude ',
-           title=ExperimentInfo+'for MIC')
-        
-    ax.grid() 
-    # fig.savefig("test.png")
-    plt.show()
     
-    
-     
-    fig, ax = plt.subplots()
-    F_length=len(Fy[ChannelNumber,:])
-    ax.plot(np.linspace(0, F_length-1, F_length), Fy[ChannelNumber,:] ,linewidth=3.0) #Correct the dimensions!!!  
-     
-    ax.set(xlabel='angle bins=2', ylabel=' Force(N) ',
-           title=ExperimentInfo+'for Fy')
+    if plotFY=='true':     
+        fig, ax = plt.subplots()
+        F_length=len(Fy[ChannelNumber,:])
+        ax.plot(np.linspace(0, F_length-1, F_length), Fy[ChannelNumber,:] ,linewidth=3.0) #Correct the dimensions!!!  
+         
+        ax.set(xlabel='angle bins=2', ylabel=' Force(N) ',
+               title=ExperimentInfo+'for Fy')
+            
+        ax.grid() 
+        # fig.savefig("test.png")
+        plt.show()
+        plt.pause(1)
         
-    ax.grid() 
-    # fig.savefig("test.png")
-    plt.show()
-     
-    fig, ax = plt.subplots()
-    
-    ax.plot(np.linspace(0, len(Sa)-1, len(Sa)), Sa ,linewidth=3.0) #Correct the dimensions!!!  
-     
-    ax.set(xlabel='Channel Numbers', ylabel=' Force(N) ',
-           title=str(ExperimentInfo)+'for Sa')
+    if plotSA=='true':     
+        fig, ax = plt.subplots()
         
-    ax.grid() 
-    # fig.savefig("test.png")
-    plt.show()
-     
+        ax.plot(np.linspace(0, len(Sa)-1, len(Sa)), Sa ,linewidth=3.0) #Correct the dimensions!!!  
+         
+        ax.set(xlabel='Channel Numbers', ylabel=' Force(N) ',
+               title=str(ExperimentInfo)+'for Sa')
+            
+        ax.grid() 
+        # fig.savefig("test.png")
+        plt.show()
+        plt.pause(1) 
      
     return     
 
@@ -118,6 +123,7 @@ def ChannelPeaktoPeakForce(dataset, ExperimentNumber):
     ax.grid() 
     # fig.savefig("test.png")
     plt.show()
+    plt.pause(10)
        
     
     
@@ -176,7 +182,8 @@ def AllPeaktoPeakForce(dataset,range1,range2):
     ax.grid()
     plt.legend(ExperimentNames);
         # fig.savefig("test.png")
-    plt.show()    
+    plt.show() 
+    plt.pause(10)
     
     
     
@@ -231,7 +238,8 @@ def PlotResults(dataset,model):
                 y_real = stack['signalFy'][j][tillChannelN+7, :].numpy()
                 
                 plt.plot(np.linspace(0, 360, y_real.size), y_real)
-                plt.show()     
+                plt.show()  
+                plt.pause(10)
     
     
     
